@@ -386,6 +386,10 @@ public class JarEncryptor {
         }
         for (File file : files) {
             if (file.isFile() && StrUtils.isMatchs(this.cfgfiles, file.getName(), false)) {
+                if (isLogbackConfig(file.getName())) {
+                    Log.debug("跳过加密日志配置文件: " + file.getName());
+                    continue;
+                }
                 configFiles.add(file);
             }
         }
@@ -393,6 +397,14 @@ public class JarEncryptor {
         this.encryptClass(configFiles);
         //清空
         configFiles.forEach(file -> IoUtils.writeTxtFile(file, ""));
+    }
+
+    private boolean isLogbackConfig(String fileName) {
+        if (StrUtils.isEmpty(fileName)) {
+            return false;
+        }
+        String name = fileName.toLowerCase();
+        return "logback.xml".equals(name) || "logback-spring.xml".equals(name);
     }
 
     /**
