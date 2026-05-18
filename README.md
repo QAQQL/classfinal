@@ -158,6 +158,7 @@ set JAVA_OPTS="-javaagent:classfinal-fatjar.jar='-pwd 000000'"
 
 
 ## 版本说明
+* v1.2.2 支持spring-boot 3 加密启动
 * v1.2.1 bug修复
 * v1.2.0 packages、libjars、cfgfiles、exclude 参数增加通配符功能
 * v1.1.7 支持加密springboot的配置文件；增加环境变量中读取密码

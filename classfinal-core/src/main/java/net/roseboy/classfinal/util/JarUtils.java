@@ -241,8 +241,19 @@ public class JarUtils {
         if (path.startsWith("jar:") || path.startsWith("war:")) {
             path = path.substring(4);
         }
+        if (path.startsWith("nested:")) {
+            path = path.substring(7);
+        }
         if (path.startsWith("file:")) {
             path = path.substring(5);
+        }
+
+        String archivePath = getArchivePath(path, ".jar");
+        if (archivePath == null) {
+            archivePath = getArchivePath(path, ".war");
+        }
+        if (archivePath != null) {
+            return archivePath;
         }
 
         //没解压的war包
@@ -264,6 +275,22 @@ public class JarUtils {
         //no
         else if (path.contains("/classes/")) {
             return path.substring(0, path.indexOf("/classes/") + 9);
+        }
+        return null;
+    }
+
+    private static String getArchivePath(String path, String suffix) {
+        int index = path.indexOf(suffix);
+        if (index < 0) {
+            return null;
+        }
+        int end = index + suffix.length();
+        if (end == path.length()) {
+            return path;
+        }
+        char next = path.charAt(end);
+        if (next == '!' || next == '/' || next == File.separatorChar) {
+            return path.substring(0, end);
         }
         return null;
     }
