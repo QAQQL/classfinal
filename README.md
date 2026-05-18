@@ -41,7 +41,7 @@ java -jar classfinal-fatjar.jar -file yourpaoject.jar -libjars a.jar,b.jar -pack
 -file        加密的jar/war完整路径
 -packages    加密的包名(可为空,多个用","分割)
 -libjars     jar/war包lib下要加密jar文件名(可为空,多个用","分割)
--cfgfiles    需要加密的配置文件，一般是classes目录下的yml或properties文件(可为空,多个用","分割)
+-cfgfiles    需要加密的配置文件，一般是classes目录下的yml或properties文件(可为空,多个用","分割；logback.xml/logback-spring.xml会自动跳过)
 -exclude     排除的类名(可为空,多个用","分割)
 -classpath   外部依赖的jar目录，例如/tomcat/lib(可为空,多个用","分割)
 -pwd         加密密码，如果是#号，则使用无密码模式加密
@@ -158,6 +158,7 @@ set JAVA_OPTS="-javaagent:classfinal-fatjar.jar='-pwd 000000'"
 
 
 ## 版本说明
+* v1.2.2 支持spring-boot 3 加密启动
 * v1.2.1 bug修复
 * v1.2.0 packages、libjars、cfgfiles、exclude 参数增加通配符功能
 * v1.1.7 支持加密springboot的配置文件；增加环境变量中读取密码

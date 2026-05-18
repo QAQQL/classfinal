@@ -6,6 +6,8 @@ import net.roseboy.classfinal.util.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * java class解密
@@ -134,19 +136,50 @@ public class JarDecryptor {
         if (StrUtils.isEmpty(projectPath)) {
             return in;
         }
-        byte[] bytes = null;
+        byte[] sourceBytes = null;
         try {
-            bytes = IoUtils.toBytes(in);
+            sourceBytes = IoUtils.toBytes(in);
         } catch (Exception e) {
 
         }
-        if (bytes == null || bytes.length == 0) {//需要解密
-            bytes = this.doDecrypt(projectPath, path, pass);
+        if (sourceBytes != null && sourceBytes.length > 0) {
+            return new ByteArrayInputStream(sourceBytes);
         }
-        if (bytes == null) {
-            return in;
+
+        byte[] decryptBytes = null;
+        List<String> names = resolveConfigNames(path);
+        for (String name : names) {
+            decryptBytes = this.doDecrypt(projectPath, name, pass);
+            if (decryptBytes != null) {
+                break;
+            }
         }
-        in = new ByteArrayInputStream(bytes);
-        return in;
+        if (decryptBytes != null) {
+            return new ByteArrayInputStream(decryptBytes);
+        }
+        return new ByteArrayInputStream(sourceBytes == null ? new byte[0] : sourceBytes);
+    }
+
+    private List<String> resolveConfigNames(String path) {
+        List<String> names = new ArrayList<>();
+        if (StrUtils.isEmpty(path)) {
+            return names;
+        }
+        String name = path.replace("\\", "/");
+        name = name.replace("classpath:", "").replace("jar:", "").replace("nested:", "");
+        while (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        if (StrUtils.isNotEmpty(name)) {
+            names.add(name);
+            int slash = name.lastIndexOf("/");
+            if (slash >= 0 && slash + 1 < name.length()) {
+                String shortName = name.substring(slash + 1);
+                if (!shortName.equals(name)) {
+                    names.add(shortName);
+                }
+            }
+        }
+        return names;
     }
 }
